@@ -1,0 +1,143 @@
+"use client";
+import { useEffect, useState } from "react";
+import { PostgrestSingleResponse } from "@supabase/supabase-js";
+import { toast } from "sonner";
+import Link from "next/link";
+
+import { createClient } from "@/utils/supabase/client";
+import LessonCard from "@/custom_components/LessonCard";
+import PagePagination from "@/custom_components/PagePagination";
+import Spinner from "@/custom_components/Spinner";
+
+const client = createClient();
+
+interface LessonsPageParams {
+    pageNumber: string;
+}
+
+interface LessonData {
+    lessonId: number;
+    title: string;
+    lecturer: string;
+    discipline: string;
+    book: string;
+    videoLink: string;
+    pdfLink: string;
+    summary: string;
+    createdAt: string;
+}
+
+export default function Lessons({ params }: { params: Promise<LessonsPageParams> }) {
+    const [allLessons, setAllLessons] = useState<LessonData[] | undefined>([]);
+    const [filteredLessons, setFilteredLessons] = useState<LessonData[] | undefined>([]);
+    const [searchTerm, setSearchTerm] = useState<string>("");
+    const [pageNumber, setPageNumber] = useState<number>(1);
+    const [nextPageAvailable, setNextPageAvailable] = useState(true);
+
+
+    async function searchLessonsFromDB(searchTerm: string) {
+        const pageLimit = 10;
+        let query = client
+            .from("lessons")
+            .select("*")
+            .order("createdAt", { ascending: false })
+            .limit(pageLimit);
+
+        if (searchTerm.trim() !== "") {
+            query = query.ilike("title", `%${searchTerm}%`);  // <-- CASE INSENSITIVE search
+        }
+
+        const { data, error }: PostgrestSingleResponse<LessonData[]> = await query;
+
+        if (!error) {
+            if (data.length < pageLimit) {
+                setNextPageAvailable(false);
+            } else {
+                setNextPageAvailable(true);
+            }
+            return data;
+        } else {
+            toast.error("Network Error", {
+                description: `A network error has occurred. Please try again later.`,
+            });
+        }
+    }
+
+
+    async function getAllLessons(params: Promise<LessonsPageParams>) {
+        const paramsData = await params;
+        const pageNumber = parseInt(paramsData.pageNumber);
+        setPageNumber(pageNumber);
+
+        const pageLimit = 10;
+        const { data, error }: PostgrestSingleResponse<LessonData[]> = await client
+            .from("lessons")
+            .select("*")
+            .order("createdAt", { ascending: false })
+            .limit(pageLimit)
+            .range(pageNumber * pageLimit - pageLimit, pageNumber * pageLimit - 1);
+
+        if (!error) {
+            if (data.length < pageLimit) {
+                setNextPageAvailable(false);
+            }
+            return data;
+        } else {
+            toast.error("Network Error", {
+                description: `A network error has occurred. Please try again later.`,
+            });
+        }
+    }
+
+    useEffect(() => {
+        searchLessonsFromDB(searchTerm).then((data: LessonData[] | undefined) => {
+          setFilteredLessons(data);
+        });
+      }, [searchTerm]);
+
+    useEffect(() => {
+        if (searchTerm.trim() === "") {
+            setFilteredLessons(allLessons);
+        } else {
+            const filtered = allLessons?.filter((lesson) =>
+                lesson.title.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            setFilteredLessons(filtered);
+        }
+    }, [searchTerm, allLessons]);
+
+    return (
+        <div className="min-h-dvh relative pb-22">
+            {/* Search Bar */}
+            <div className="flex justify-center p-5">
+                <input
+                    type="text"
+                    placeholder="Search lessons by title..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full md:w-1/2 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+            </div>
+
+            {/* Lessons List */}
+            <div className="pl-20 pr-20 pt-5 flex justify-between flex-wrap">
+                {filteredLessons ? (
+                    filteredLessons.length > 0 ? (
+                        filteredLessons.map((lesson) => (
+                            <Link href={`details/${lesson.lessonId}`} key={lesson.lessonId}>
+                                <LessonCard lesson={lesson} />
+                            </Link>
+                        ))
+                    ) : (
+                        <div className="text-center w-full text-gray-500 pt-10">No lessons found.</div>
+                    )
+                ) : (
+                    <Spinner />
+                )}
+            </div>
+
+            {/* Pagination */}
+            <PagePagination pageNumber={pageNumber} nextPageAvailable={nextPageAvailable} />
+        </div>
+    );
+}
