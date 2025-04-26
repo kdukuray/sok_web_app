@@ -100,7 +100,7 @@ export default function CreateLesson() {
             const fileName = `title_${values.title}_${uuidv4()}.pdf`;
 
             // Upload the file
-            const { data: uploadData, error: uploadError } = await client.storage
+            const { error: uploadError } = await client.storage
                 .from("lecture-pdfs")
                 .upload(fileName, values.pdfFile[0], {
                     cacheControl: "3600",
@@ -130,7 +130,7 @@ export default function CreateLesson() {
 
 
     async function createNewLesson(values: z.infer<typeof createLessonFormSchema>) {
-        let newLesson: LessonData = {
+        const newLesson: LessonData = {
             title: values.title,
             lecturer: values.lecturer,
             discipline: values.discipline,

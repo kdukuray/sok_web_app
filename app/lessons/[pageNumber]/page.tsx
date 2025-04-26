@@ -27,16 +27,17 @@ interface LessonData {
     createdAt: string;
 }
 
-export default function Lessons({ params }: { params: Promise<LessonsPageParams> }) {
+export default function Lessons( params :  Promise<LessonsPageParams> ) {
     const [allLessons, setAllLessons] = useState<LessonData[] | undefined>([]);
     const [filteredLessons, setFilteredLessons] = useState<LessonData[] | undefined>([]);
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [pageNumber, setPageNumber] = useState<number>(1);
-    const [nextPageAvailable, setNextPageAvailable] = useState(true);
+    const [nextPageAvailable, setNextPageAvailable] = useState<boolean>(true);
+    const pageLimit: number = 10;
 
 
     async function searchLessonsFromDB(searchTerm: string) {
-        const pageLimit = 10;
+        
         let query = client
             .from("lessons")
             .select("*")
