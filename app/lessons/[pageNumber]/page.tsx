@@ -130,7 +130,7 @@ export default function Lessons({ params }: {params: Promise<LessonsPageParams>}
             </div>
 
             {/* Lessons List */}
-            <div className="pl-20 pr-20 pt-5 flex justify-between flex-wrap">
+            <div className="lg:pl-20 pr-20 pt-5 flex justify-between flex-wrap">
                 {filteredLessons ? (
                     filteredLessons.length > 0 ? (
                         filteredLessons.map((lesson) => (
