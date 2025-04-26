@@ -22,8 +22,8 @@ export default async function Footer() {
         <div className="space-y-4">
           <h4 className="text-xl font-semibold border-b border-white pb-2">Report Issues</h4>
           <ul className="space-y-2 text-gray-300">
-            <li>Email: <a href="mailto:bugs@example.com" className="underline hover:text-gray-100">bugs@example.com</a></li>
-            <li><a href="https://github.com/your-repo/issues" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-100">Contribute on GitHub</a></li>
+            <li>Email: <a href="mailto:sotheknowledge.com" className="underline hover:text-gray-100">sotheknowledge.com</a></li>
+            <li><a href="https://github.com/kdukuray/sok_web_app" target="_blank" rel="noopener noreferrer" className="underline hover:text-gray-100">Contribute on GitHub</a></li>
           </ul>
         </div>
 
@@ -38,8 +38,7 @@ export default async function Footer() {
           <h4 className="text-xl font-semibold border-b border-white pb-2">Contact</h4>
           <ul className="space-y-2 text-gray-300">
             <li>📍 1462 Boston Rd, Bronx, NY 10459</li>
-            <li>📞 +1 929-650-9628</li>
-            <li>✉️ markazalqiraat@gmail.com</li>
+            <li>✉️ sotheknowledge.com</li>
           </ul>
         </div>
       </div>
