@@ -1,6 +1,6 @@
 "use client";
 
-import { login, signup } from "./actions";
+import { login } from "./actions";
 
 export default function LoginPage() {
   return (

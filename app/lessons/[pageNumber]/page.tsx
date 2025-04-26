@@ -89,27 +89,31 @@ export default function Lessons(params: Promise<LessonsPageParams>) {
         }
     }
 
-    // First useEffect: Fetch lessons when page loads
+    // 1. Fetch the initial page when component loads
     useEffect(() => {
         getAllLessons(params).then((data: LessonData[] | undefined) => {
             if (data) {
                 setAllLessons(data);
-                setFilteredLessons(data); // initially show all lessons
+                setFilteredLessons(data);
             }
         });
     }, [params]);
 
-    // Second useEffect: Filter locally when searchTerm changes
+    // 2. Whenever searchTerm changes, query the database if searchTerm is not empty
     useEffect(() => {
-        if (searchTerm.trim() === "") {
-            setFilteredLessons(allLessons); // reset to all lessons
-        } else {
-            const filtered = allLessons?.filter((lesson) =>
-                lesson.title.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-            setFilteredLessons(filtered);
+        async function fetchSearchResults() {
+            if (searchTerm.trim() === "") {
+                // If no search term, show the default lessons for that page
+                setFilteredLessons(allLessons);
+            } else {
+                const data = await searchLessonsFromDB(searchTerm);
+                setFilteredLessons(data);
+            }
         }
-    }, [searchTerm, allLessons]);
+
+        fetchSearchResults();
+    }, [searchTerm]);
+
 
 
     return (
