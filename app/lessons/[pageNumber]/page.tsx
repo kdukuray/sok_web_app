@@ -26,7 +26,7 @@ interface LessonData {
     createdAt: string;
 }
 
-export default function Lessons(params: Promise<LessonsPageParams>) {
+export default function Lessons({ params }: {params: Promise<LessonsPageParams>}) {
     const [allLessons, setAllLessons] = useState<LessonData[] | undefined>([]);
     const [filteredLessons, setFilteredLessons] = useState<LessonData[] | undefined>([]);
     const [searchTerm, setSearchTerm] = useState<string>("");
