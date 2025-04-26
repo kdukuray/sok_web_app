@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { PostgrestSingleResponse } from "@supabase/supabase-js";
 import { toast } from "sonner";
 import Link from "next/link";
-
 import { createClient } from "@/utils/supabase/client";
 import LessonCard from "@/custom_components/LessonCard";
 import PagePagination from "@/custom_components/PagePagination";
@@ -27,7 +26,7 @@ interface LessonData {
     createdAt: string;
 }
 
-export default function Lessons( params :  Promise<LessonsPageParams> ) {
+export default function Lessons(params: Promise<LessonsPageParams>) {
     const [allLessons, setAllLessons] = useState<LessonData[] | undefined>([]);
     const [filteredLessons, setFilteredLessons] = useState<LessonData[] | undefined>([]);
     const [searchTerm, setSearchTerm] = useState<string>("");
@@ -37,7 +36,7 @@ export default function Lessons( params :  Promise<LessonsPageParams> ) {
 
 
     async function searchLessonsFromDB(searchTerm: string) {
-        
+
         let query = client
             .from("lessons")
             .select("*")
@@ -90,15 +89,20 @@ export default function Lessons( params :  Promise<LessonsPageParams> ) {
         }
     }
 
+    // First useEffect: Fetch lessons when page loads
     useEffect(() => {
-        searchLessonsFromDB(searchTerm).then((data: LessonData[] | undefined) => {
-          setFilteredLessons(data);
+        getAllLessons(params).then((data: LessonData[] | undefined) => {
+            if (data) {
+                setAllLessons(data);
+                setFilteredLessons(data); // initially show all lessons
+            }
         });
-      }, [searchTerm]);
+    }, [params]);
 
+    // Second useEffect: Filter locally when searchTerm changes
     useEffect(() => {
         if (searchTerm.trim() === "") {
-            setFilteredLessons(allLessons);
+            setFilteredLessons(allLessons); // reset to all lessons
         } else {
             const filtered = allLessons?.filter((lesson) =>
                 lesson.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -106,6 +110,7 @@ export default function Lessons( params :  Promise<LessonsPageParams> ) {
             setFilteredLessons(filtered);
         }
     }, [searchTerm, allLessons]);
+
 
     return (
         <div className="min-h-dvh relative pb-22">

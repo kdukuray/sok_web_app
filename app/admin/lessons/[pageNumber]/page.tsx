@@ -31,14 +31,14 @@ export default function AdminLessons({ params }: {params: Promise<AdminLessonsPa
     const router = useRouter()
 
 
-    const [allLessons, setAllLessons] = useState<any[] | undefined>([]);
+    const [allLessons, setAllLessons] = useState<LessonData[] | undefined>([]);
     const [pageNumber, setPageNumber] = useState<number>(1);
     const pageLimit: number = 10;
     const [nextPageAvailable, setNextPageAvailable] = useState<boolean>(true)
 
     // Function to delete a lesson from the database
     async function deleteLesson(lessonId: number) {
-        const { data, error }: PostgrestSingleResponse<null> = await client
+        const { error }: PostgrestSingleResponse<null> = await client
         .from("lessons")
         .delete()
         .eq("lessonId", lessonId)

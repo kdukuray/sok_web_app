@@ -3,23 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/custom_components/Navbar";
 import Footer from "@/custom_components/Footer";
-import { createClient } from "@supabase/supabase-js";
 import { Toaster } from "@/components/ui/sonner"
 import Providers from "./providers";
-
-
-
-let supabase_url = ""
-let supabase_anon_key = ""
-
-if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-  supabase_url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  supabase_anon_key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-
-}
-
-const client = createClient(supabase_url, supabase_anon_key);
-
 
 
 const geistSans = Geist({
